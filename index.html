@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NovaSocial Web Platform</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        nova: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#2563eb',
+                            600: '#1d4ed8',
+                            700: '#1e40af',
+                            900: '#0f172a',
+                            darkBg: '#0b1120',
+                            darkCard: '#131d31',
+                            darkCardHover: '#1c2a45',
+                            borderDark: '#1e293b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Lucide Icons & Google Fonts -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.3); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(156, 163, 175, 0.5); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .nova-story-ring {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 50%, #ec4899 100%);
+            padding: 2.5px;
+        }
+
+        .animated-gradient {
+            background: linear-gradient(-45deg, #2563eb, #7c3aed, #db2777, #059669);
+            background-size: 400% 400%;
+            animation: gradient 12s ease infinite;
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 dark:bg-nova-darkBg dark:text-slate-100 transition-colors duration-200 min-h-screen flex flex-col selection:bg-blue-500 selection:text-white pb-16 md:pb-0">
+
+    <div id="app" class="flex-1 flex flex-col md:flex-row max-w-7xl w-full mx-auto relative">
+
+        <!-- DESKTOP SIDEBAR -->
+        <aside id="sidebar" class="hidden md:flex flex-col w-64 border-r border-slate-200 dark:border-nova-borderDark p-4 sticky top-0 h-screen justify-between bg-white/80 dark:bg-nova-darkCard/80 backdrop-blur-md z-20">
+            <div>
+                <!-- Brand Logo & Author Credit -->
+                <div class="flex items-center gap-3 px-3 py-3 mb-4 cursor-pointer" onclick="switchTab('home')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-500 to-pink-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-500/30">
+                        NS
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg leading-tight bg-gradient-to-r from-blue-500 to-indigo-400 bg-clip-text text-transparent">NovaSocial</h1>
+                        <span class="text-[11px] text-pink-500 dark:text-pink-400 font-semibold tracking-wide">by: Zakypov Sabit</span>
+                    </div>
+                </div>
+
+                <nav class="space-y-1" id="nav-menu">
+                    <!-- Dynamic navigation buttons -->
+                </nav>
+            </div>
+
+            <div id="sidebar-user-card" class="border-t border-slate-200 dark:border-nova-borderDark pt-4 flex items-center justify-between px-2">
+                <!-- Dynamic user content -->
+            </div>
+        </aside>
+
+        <main class="flex-1 max-w-2xl w-full mx-auto border-x border-slate-200 dark:border-nova-borderDark min-h-screen flex flex-col">
+            <header class="sticky top-0 z-30 bg-white/90 dark:bg-nova-darkCard/90 backdrop-blur-md border-b border-slate-200 dark:border-nova-borderDark px-4 py-3 flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 flex-1">
+                    <span onclick="switchTab('home')" class="md:hidden w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-pink-500 text-white font-black flex items-center justify-center text-sm shadow-md shadow-blue-500/20 flex-shrink-0 cursor-pointer">NS</span>
+                    <div class="flex-1 max-w-xs">
+                        <h2 id="page-title" class="text-base md:text-xl font-bold tracking-tight truncate">Главная</h2>
+                        <span class="md:hidden text-[9px] text-pink-500 font-bold block leading-none">Zakypov Sabit</span>
+                    </div>
+                </div>
+
+                <!-- Mobile Header Controls -->
+                <div class="flex items-center gap-1 sm:gap-2">
+                    <button onclick="switchAccount('admin')" class="px-2 py-1.5 rounded-xl bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 text-xs font-bold transition flex items-center gap-1" title="Админ панель">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i> <span class="hidden sm:inline">Админ</span>
+                    </button>
+                    <button onclick="openNotificationsModal()" class="relative p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition" title="Уведомления">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span id="notif-badge" class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    <button onclick="toggleTheme()" class="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition" title="Тема">
+                        <i data-lucide="sun" class="hidden dark:block w-5 h-5"></i>
+                        <i data-lucide="moon" class="block dark:hidden w-5 h-5"></i>
+                    </button>
+                    <button onclick="openMobileMoreMenu()" class="md:hidden p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition" title="Ещё">
+                        <i data-lucide="menu" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Mobile Quick Search Input -->
+            <div class="p-3 md:hidden border-b border-slate-200 dark:border-nova-borderDark bg-slate-50 dark:bg-nova-darkCard/50">
+                <div class="relative">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-400"></i>
+                    <input type="text" id="mobile-search-input" onkeyup="handleSearch(this.value)" placeholder="Поиск постов и друзей..." class="w-full bg-white dark:bg-nova-darkCard pl-9 pr-4 py-1.5 rounded-xl text-xs border border-slate-200 dark:border-nova-borderDark focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+            </div>
+
+            <!-- Dynamic Tab Container -->
+            <div id="view-container" class="p-3 sm:p-4 flex-1">
+                <!-- Content Injected Dynamically -->
+            </div>
+        </main>
+
+        <aside class="hidden lg:block w-80 p-4 space-y-4 sticky top-0 h-screen overflow-y-auto">
+            <div class="relative">
+                <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
+                <input type="text" id="search-input" onkeyup="handleSearch(this.value)" placeholder="Поиск постов или друзей..." class="w-full bg-slate-200 dark:bg-nova-darkCard pl-9 pr-4 py-2.5 rounded-xl text-sm border border-transparent dark:border-nova-borderDark focus:ring-2 focus:ring-blue-500 outline-none transition">
+            </div>
+
+            <div class="bg-white dark:bg-nova-darkCard border border-slate-200 dark:border-nova-borderDark rounded-2xl p-4 shadow-sm">
+                <h3 class="font-bold text-sm mb-3 flex items-center gap-2">
+                    <i data-lucide="users" class="w-4 h-4 text-blue-500"></i> Аккаунты (Быстрый вход)
+                </h3>
+                <div id="sidebar-friends-recommendations" class="space-y-3"></div>
+            </div>
+
+            <div class="bg-white dark:bg-nova-darkCard border border-slate-200 dark:border-nova-borderDark rounded-2xl p-4 shadow-sm">
+                <h3 class="font-bold text-sm mb-3 flex items-center gap-2">
+                    <i data-lucide="cloud" class="w-4 h-4 text-pink-500"></i> Облачная синхронизация
+                </h3>
+                <div class="space-y-2 text-xs text-slate-500 dark:text-slate-400">
+                    <p class="flex justify-between"><span class="font-semibold text-slate-700 dark:text-slate-200">Автор проекта:</span> <span class="font-bold text-pink-500">Zakypov Sabit</span></p>
+                    <p class="flex justify-between"><span>Нагрузка:</span> <span class="font-bold text-emerald-500">До 100 000+ онлайн</span></p>
+                    <p class="flex justify-between"><span>База данных:</span> <span class="font-semibold text-blue-500">Realtime Firestore</span></p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Mobile Bottom Navigation Bar -->
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-nova-darkCard/95 backdrop-blur-lg border-t border-slate-200 dark:border-nova-borderDark flex justify-around p-1.5 z-40 shadow-2xl" id="mobile-nav-menu">
+            <!-- Dynamic Mobile Navigation Tabs -->
+        </nav>
+    </div>
+
+    <!-- Mobile More Drawer Sheet -->
+    <div id="mobile-more-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden z-50 flex items-end justify-center" onclick="if(event.target===this) closeModal('mobile-more-modal')">
+        <div class="bg-white dark:bg-nova-darkCard w-full rounded-t-3xl p-5 shadow-2xl border-t border-slate-200 dark:border-nova-borderDark space-y-3 max-h-[80vh] overflow-y-auto">
+            <div class="w-12 h-1.5 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto mb-2"></div>
+            <h3 class="font-bold text-base flex items-center gap-2 mb-2">
+                <i data-lucide="grid" class="w-5 h-5 text-blue-500"></i> Меню и функции
+            </h3>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+                <button onclick="closeModal('mobile-more-modal'); switchTab('saved');" class="p-3 bg-slate-100 dark:bg-nova-darkCardHover rounded-2xl flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200">
+                    <i data-lucide="bookmark" class="w-4 h-4 text-amber-500"></i> Сохранённые
+                </button>
+                <button onclick="closeModal('mobile-more-modal'); switchTab('admin');" class="p-3 bg-slate-100 dark:bg-nova-darkCardHover rounded-2xl flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-indigo-500"></i> Админка
+                </button>
+                <button onclick="closeModal('mobile-more-modal'); openLanguageModal();" class="p-3 bg-slate-100 dark:bg-nova-darkCardHover rounded-2xl flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200">
+                    <i data-lucide="globe" class="w-4 h-4 text-emerald-500"></i> Выбор языка
+                </button>
+                <button onclick="closeModal('mobile-more-modal'); switchTab('settings');" class="p-3 bg-slate-100 dark:bg-nova-darkCardHover rounded-2xl flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200">
+                    <i data-lucide="settings" class="w-4 h-4 text-pink-500"></i> Настройки
+                </button>
+            </div>
+            <div class="pt-2 border-t border-slate-200 dark:border-nova-borderDark">
+                <p class="text-[11px] font-bold text-slate-400 mb-2">Переключить пользователя:</p>
+                <div id="mobile-users-switcher" class="flex items-center gap-2 overflow-x-auto pb-1"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Post Creator Action Modal -->
+    <div id="quick-create-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" onclick="if(event.target===this) closeModal('quick-create-modal')">
+        <div class="bg-white dark:bg-nova-darkCard w-full max-w-sm rounded-t-3xl sm:rounded-2xl p-5 shadow-2xl border border-slate-200 dark:border-nova-borderDark space-y-3">
+            <div class="w-12 h-1.5 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto mb-2 sm:hidden"></div>
+            <h3 class="font-bold text-base flex items-center gap-2">
+                <i data-lucide="sparkles" class="w-5 h-5 text-pink-500"></i> Создать контент
+            </h3>
+            <div class="space-y-2">
+                <button onclick="closeModal('quick-create-modal'); switchTab('create');" class="w-full p-3 bg-blue-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 text-sm shadow-lg shadow-blue-500/25">
+                    <i data-lucide="plus-square" class="w-4 h-4"></i> Опубликовать пост
+                </button>
+                <button onclick="closeModal('quick-create-modal'); openModal('create-story-modal');" class="w-full p-3 bg-gradient-to-r from-purple-600 to-pink-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 text-sm shadow-lg shadow-pink-500/25">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i> Добавить историю
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Post Modal -->
+    <div id="edit-post-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-nova-darkCard w-full max-w-md rounded-2xl p-5 shadow-2xl border border-slate-200 dark:border-nova-borderDark space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-base flex items-center gap-2">
+                    <i data-lucide="edit-3" class="w-5 h-5 text-blue-500"></i> Редактировать пост
+                </h3>
+                <button onclick="closeModal('edit-post-modal')" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-slate-400">Текст поста</label>
+                <textarea id="edit-post-text-input" rows="4" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-nova-borderDark rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mt-1 resize-none"></textarea>
+            </div>
+            <button onclick="saveEditedPost()" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/25 transition">
+                Сохранить изменения
+            </button>
+        </div>
+    </div>
+
+    <!-- Notifications Modal -->
+    <div id="notifications-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-nova-darkCard w-full max-w-md rounded-2xl p-5 shadow-2xl border border-slate-200 dark:border-nova-borderDark space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                    <i data-lucide="bell" class="w-5 h-5 text-blue-500"></i> Уведомления
+                </h3>
+                <button onclick="closeModal('notifications-modal')" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div id="notifications-list" class="space-y-3 max-h-80 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-nova-darkCard w-full max-w-md rounded-2xl p-5 shadow-2xl border border-slate-200 dark:border-nova-borderDark space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                    <i data-lucide="user-cog" class="w-5 h-5 text-blue-500"></i> Редактирование профиля
+                </h3>
+                <button onclick="closeModal('edit-profile-modal')" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-slate-400 block mb-1">Аватарка</label>
+                <div class="flex items-center gap-3">
+                    <img id="edit-avatar-preview" class="w-12 h-12 rounded-full object-cover border border-slate-300 dark:border-slate-700">
+                    <label class="cursor-pointer bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition flex-1 justify-center">
+                        <i data-lucide="image" class="w-4 h-4 text-blue-500"></i> Выбрать фото
+                        <input type="file" id="edit-avatar-file-input" accept="image/*" onchange="previewAvatarFile(event)" class="hidden">
+                    </label>
+                </div>
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-slate-400">О себе (Bio)</label>
+                <textarea id="edit-bio-input" rows="3" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-nova-borderDark rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mt-1 resize-none"></textarea>
+            </div>
+            <div>
+                <label class="text-xs font-semibold text-slate-400">Номер телефона</label>
+                <input type="text" id="edit-phone-input" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-nova-borderDark rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mt-1">
+            </div>
+            <button onclick="saveProfileChanges()" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/25 transition">
+                Сохранить изменения
+            </button>
+        </div>
+    </div>
+
+    <!-- Comments Bottom Drawer Modal -->
+    <div id="comments-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white dark:bg-nova-darkCard w-full max-w-lg rounded-t-3xl sm:rounded-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200 dark:border-nova-borderDark">
+            <div class="p-4 border-b border-slate-200 dark:border-nova-borderDark flex items-center justify-between">
+                <h3 class="font-bold text-base flex items-center gap-2">
+                    <i data-lucide="message-square" class="w-5 h-5 text-blue-500"></i> Комментарии
+                </h3>
+                <button onclick="closeModal('comments-modal')" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div id="comments-list" class="p-4 overflow-y-auto flex-1 space-y-3"></div>
+
+            <div class="p-3 border-t border-slate-200 dark:border-nova-borderDark flex gap-2 bg-slate-50 dark:bg-slate-900/50">
+                <input type="text" id="comment-input" onkeypress="if(event.key === 'Enter') sendComment()" placeholder="Написать комментарий..." class="flex-1 bg-white dark:bg-nova-darkCard border border-slate-200 dark:border-nova-borderDark rounded-xl px-4 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button id="send-comment-btn" onclick="sendComment()" class="bg-blue-600 hover:bg-blue-500 text-white p-2.5 rounded-xl transition shadow-md shadow-blue-500/20 flex-shrink-0">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stories Creator Modal -->
+    <div id="create-story-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-nova-darkCard w-full max-w-md rounded-2xl p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-nova-borderDark space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                    <i data-lucide="plus-circle" class="w-5 h-5 text-pink-500"></i> Создать Историю
+                </h3>
+                <button onclick="closeModal('create-story-modal')" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div>
+                <label class="text-xs font-semibold text-slate-400">Текст истории</label>
+                <textarea id="story-text-input" rows="3" placeholder="Что у вас нового?..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-nova-borderDark rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 mt-1 resize-none"></textarea>
+            </div>
+
+            <div>
+                <label class="text-xs font-semibold text-slate-400 block mb-1">Фото или Видео истории</label>
+                <div id="story-media-preview-box" class="hidden relative mb-2 rounded-xl overflow-hidden max-h-48 bg-black">
+                    <img id="story-img-preview" class="w-full h-48 object-cover hidden">
+                    <video id="story-video-preview" class="w-full h-48 object-cover hidden" controls></video>
+                    <button onclick="clearStoryMedia()" class="absolute top-2 right-2 p-1 bg-black/70 text-white rounded-full hover:bg-black">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <label class="cursor-pointer bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 w-full py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition">
+                    <i data-lucide="image" class="w-4 h-4 text-pink-500"></i> Выбрать фото / видео
+                    <input type="file" accept="image/*,video/*" onchange="handleStoryMediaUpload(event)" class="hidden">
+                </label>
+            </div>
+
+            <button onclick="publishStory()" class="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-pink-500 hover:opacity-90 text-white py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-blue-500/25 transition">
+                Опубликовать историю
+            </button>
+        </div>
+    </div>
+
+    <!-- Fullscreen Story Viewer -->
+    <div id="story-viewer-modal" class="fixed inset-0 bg-black/95 hidden z-50 flex items-center justify-center">
+        <div class="relative w-full max-w-sm h-full max-h-[90vh] bg-slate-900 rounded-2xl overflow-hidden flex flex-col justify-between p-4 shadow-2xl border border-slate-800">
+            <div class="w-full bg-slate-700 h-1 rounded-full overflow-hidden mb-3">
+                <div id="story-progress-bar" class="bg-gradient-to-r from-blue-500 to-pink-500 h-full w-0 transition-all duration-100"></div>
+            </div>
+
+            <div class="flex items-center justify-between z-10 text-white mb-2">
+                <div class="flex items-center gap-2">
+                    <div class="w-9 h-9 rounded-full nova-story-ring flex items-center justify-center">
+                        <img id="story-user-avatar" class="w-8 h-8 rounded-full object-cover border border-slate-900">
+                    </div>
+                    <div>
+                        <p id="story-user-name" class="font-bold text-xs">@user</p>
+                        <p id="story-time" class="text-[10px] text-slate-400">Только что</p>
+                    </div>
+                </div>
+                <button onclick="closeStoryViewer()" class="p-1 hover:bg-white/20 rounded-lg text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div id="story-body-content" class="flex-1 flex items-center justify-center relative overflow-hidden rounded-xl bg-black"></div>
+        </div>
+    </div>
+
+    <!-- Share Post Modal -->
+    <div id="share-post-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-nova-darkCard w-full max-w-md rounded-2xl p-5 shadow-2xl border border-slate-200 dark:border-nova-borderDark">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-base flex items-center gap-2">
+                    <i data-lucide="send" class="w-5 h-5 text-blue-500"></i> Поделиться постом
+                </h3>
+                <button onclick="closeModal('share-post-modal')" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">Выберите пользователя для отправки:</p>
+            <div id="share-friends-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- Languages Modal -->
+    <div id="language-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-nova-darkCard w-full max-w-md rounded-2xl p-6 shadow-2xl border border-slate-200 dark:border-nova-borderDark">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                    <i data-lucide="globe" class="w-5 h-5 text-blue-500"></i> Выбор языка
+                </h3>
+                <button onclick="closeModal('language-modal')" class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="grid grid-cols-2 gap-2 max-h-72 overflow-y-auto p-1" id="languages-grid"></div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { getFirestore, doc, collection, onSnapshot, setDoc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+        // Initial default database state
+        const defaultUsers = {
+            "admin": { password: "admin", phone: "+996999000000", bio: "Главный Администратор NovaSocial 🛡️ (by: Zakypov Sabit)", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150", lang: "Русский", role: "admin" },
+            "alex": { password: "123", phone: "+996700123456", bio: "Fullstack Web Developer 💻⚡", avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150", lang: "Русский", role: "user" },
+            "elena": { password: "123", phone: "+996555987654", bio: "Фотограф и искусство 📸✨", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150", lang: "English", role: "user" }
+        };
+
+        window.DB = {
+            users: defaultUsers,
+            posts: [
+                { id: "p101", user: "elena", text: "Закат в горах! Невероятная атмосфера. 🔥⛰️ #travel", mediaType: "image", mediaUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800", likes: 18, likedBy: ["alex", "admin"], saved: ["admin"], comments: [{ user: "alex", text: "Очень красивый кадр!" }], createdAt: "15 мин. назад" },
+                { id: "p102", user: "admin", text: "Добро пожаловать в NovaSocial (by: Zakypov Sabit)! Сервер готов к 100 000+ пользователям с сохраненной поддержкой изменений! 🚀📱", mediaType: "image", mediaUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800", likes: 45, likedBy: ["elena", "alex"], saved: ["admin"], comments: [{ user: "elena", text: "Мобильный дизайн выглядит здорово!" }], createdAt: "1 час назад" }
+            ],
+            stories: [
+                { id: "s201", user: "admin", mediaType: "image", mediaUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800", text: "Обновленный адаптивный интерфейс NovaSocial! ✨", createdAt: "10 мин. назад" },
+                { id: "s202", user: "elena", mediaType: "image", mediaUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800", text: "Всем отличного дня! 🌸", createdAt: "30 мин. назад" }
+            ],
+            chats: {
+                "admin_alex": [
+                    { sender: "admin", text: "Привет, Alex! Добро пожаловать в NovaSocial.", time: "10:00" },
+                    { sender: "alex", text: "Привет! Мобильная версия очень удобная!", time: "10:05" }
+                ]
+            },
+            notifications: [
+                { id: 1, type: "like", text: "поставил(а) лайк вашей публикации", user: "elena", time: "5 мин. назад" }
+            ],
+            reels: [
+                { id: "r301", user: "elena", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-tree-branches-in-the-breeze-1187-large.mp4", caption: "Природа и покой 🌿✨ #reels", likes: 112 },
+                { id: "r302", user: "admin", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-waves-in-the-water-1164-large.mp4", caption: "NovaSocial Mobile Experience 🌊💻", likes: 240 }
+            ]
+        };
+
+        // Initialize Firebase with fallback configuration
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "demo-key",
+            authDomain: "novasocial.firebaseapp.com",
+            projectId: "novasocial-app",
+            storageBucket: "novasocial.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:demo"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nova-social-app';
+
+        window.firebaseApp = app;
+        window.firebaseDb = db;
+        window.firebaseAuth = auth;
+        window.appId = appId;
+
+        let firestoreUser = null;
+
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.warn("Auth initialization fallback:", err);
+            }
+        }
+
+        onAuthStateChanged(auth, (u) => {
+            firestoreUser = u;
+            if (u) {
+                setupRealtimeListeners();
+            }
+        });
+
+        initAuth();
+
+        function setupRealtimeListeners() {
+            if (!firestoreUser) return;
+
+            // Live Posts Listener
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'posts'), (snapshot) => {
+                if (!snapshot.empty) {
+                    const cloudPosts = [];
+                    snapshot.forEach(docSnap => cloudPosts.push({ id: docSnap.id, ...docSnap.data() }));
+                    cloudPosts.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+                    window.DB.posts = cloudPosts;
+                    if (window.renderApp) window.renderApp();
+                }
+            }, (err) => console.warn("Firestore posts listener notice:", err));
+
+            // Live Users Listener
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'users'), (snapshot) => {
+                if (!snapshot.empty) {
+                    snapshot.forEach(docSnap => {
+                        window.DB.users[docSnap.id] = docSnap.data();
+                    });
+                    if (window.renderApp) window.renderApp();
+                }
+            }, (err) => console.warn("Firestore users listener notice:", err));
+
+            // Live Stories Listener
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'stories'), (snapshot) => {
+                if (!snapshot.empty) {
+                    const cloudStories = [];
+                    snapshot.forEach(docSnap => cloudStories.push({ id: docSnap.id, ...docSnap.data() }));
+                    window.DB.stories = cloudStories;
+                    if (window.renderApp) window.renderApp();
+                }
+            }, (err) => console.warn("Firestore stories listener notice:", err));
+        }
+
+        window.savePostToFirestore = async function(postObj) {
+            try {
+                if (!firestoreUser) return;
+                const postRef = doc(db, 'artifacts', appId, 'public', 'data', 'posts', String(postObj.id));
+                await setDoc(postRef, { ...postObj, timestamp: postObj.timestamp || Date.now() }, { merge: true });
+            } catch (err) {
+                console.error("Firestore post save error:", err);
+            }
+        };
+
+        window.deletePostFromFirestore = async function(postId) {
+            try {
+                if (!firestoreUser) return;
+                const postRef = doc(db, 'artifacts', appId, 'public', 'data', 'posts', String(postId));
+                await deleteDoc(postRef);
+            } catch (err) {
+                console.error("Firestore post delete error:", err);
+            }
+        };
+
+        window.saveUserToFirestore = async function(username, userData) {
+            try {
+                if (!firestoreUser) return;
+                const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', username);
+                await setDoc(userRef, userData, { merge: true });
+            } catch (err) {
+                console.error("Firestore user save error:", err);
+            }
+        };
+
+        window.saveStoryToFirestore = async function(storyObj) {
+            try {
+                if (!firestoreUser) return;
+                const storyRef = doc(db, 'artifacts', appId, 'public', 'data', 'stories', String(storyObj.id));
+                await setDoc(storyRef, storyObj, { merge: true });
+            } catch (err) {
+                console.error("Firestore story save error:", err);
+            }
+        };
+    </script>
+
+    <script>
+        const LANGUAGES = [
+            "Русский", "Кыргызча", "English", "Қазақша", "O'zbekcha",
+            "Türkçe", "Deutsch", "Français", "Español", "中文"
+        ];
+
+        let selectedAvatarBase64 = null;
+        let selectedPostMedia = { type: null, url: null };
+        let selectedStoryMedia = { type: null, url: null };
+        let activeEditPostId = null;
+
+        let currentUser = localStorage.getItem('nova_user') || 'admin';
+        let activeTab = 'home';
+        let searchQuery = '';
+        let activeChatUser = 'alex';
+        let activeCommentPostId = null;
+        let activeSharePostId = null;
+        let storyTimer = null;
+
+        function getDB() {
+            return window.DB || { users: {}, posts: [], stories: [], chats: {}, notifications: [], reels: [] };
+        }
+
+        function switchAccount(username) {
+            const DB = getDB();
+            if (DB.users[username]) {
+                currentUser = username;
+                localStorage.setItem('nova_user', username);
+                showToast(`Переключено на: @${username}`, 'info');
+                renderApp();
+            }
+        }
+
+        function openModal(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.remove('hidden');
+                if (window.lucide) lucide.createIcons();
+            }
+        }
+
+        function closeModal(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('hidden');
+        }
+
+        function openMobileMoreMenu() {
+            const container = document.getElementById('mobile-users-switcher');
+            const DB = getDB();
+            if (container) {
+                container.innerHTML = Object.keys(DB.users).map(u => `
+                    <button onclick="switchAccount('${u}'); closeModal('mobile-more-modal');" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold whitespace-nowrap">
+                        <img src="${DB.users[u]?.avatar || 'https://placehold.co/150'}" class="w-5 h-5 rounded-full object-cover">
+                        <span>@${u}</span>
+                    </button>
+                `).join('');
+            }
+            openModal('mobile-more-modal');
+        }
+
+        function handleSearch(val) {
+            searchQuery = val;
+            if (activeTab === 'home') {
+                renderHomeView(document.getElementById('view-container'));
+            }
+        }
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = `px-4 py-2.5 rounded-xl text-xs font-semibold text-white shadow-xl flex items-center gap-2 transition-all transform translate-y-2 opacity-0 pointer-events-auto ${
+                type === 'error' ? 'bg-red-500' : type === 'success' ? 'bg-emerald-500' : 'bg-blue-600'
+            }`;
+            toast.innerHTML = `<span>${msg}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', '-translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        function switchTab(tab) {
+            activeTab = tab;
+            const titleEl = document.getElementById('page-title');
+            
+            const titles = {
+                'home': 'Главная',
+                'reels': 'Reels & Видео',
+                'chats': 'Сообщения',
+                'create': 'Новый пост',
+                'saved': 'Сохранённые',
+                'profile': 'Мой Профиль',
+                'admin': 'Админ-панель',
+                'settings': 'Настройки'
+            };
+
+            if (titleEl) titleEl.innerText = titles[tab] || 'NovaSocial';
+            renderApp();
+        }
+
+        function renderNavigation() {
+            const DB = getDB();
+            const navMenu = document.getElementById('nav-menu');
+            const mobileMenu = document.getElementById('mobile-nav-menu');
+            const userCard = document.getElementById('sidebar-user-card');
+
+            if (!currentUser) return;
+
+            const currUserData = DB.users[currentUser] || {};
+            const isAdmin = currUserData.role === 'admin' || currentUser === 'admin';
+
+            const items = [
+                { id: 'home', label: 'Главная', icon: 'home' },
+                { id: 'reels', label: 'Reels', icon: 'clapperboard' },
+                { id: 'chats', label: 'Чаты', icon: 'message-circle' },
+                { id: 'create', label: 'Создать', icon: 'plus-square' },
+                { id: 'saved', label: 'Сохранённые', icon: 'bookmark' },
+                { id: 'profile', label: 'Профиль', icon: 'user' }
+            ];
+
+            if (isAdmin) items.push({ id: 'admin', label: 'Админка', icon: 'shield-alert' });
+
+            if (navMenu) {
+                navMenu.innerHTML = items.map(item => `
+                    <button onclick="switchTab('${item.id}')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-sm transition ${
+                        activeTab === item.id 
+                        ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25' 
+                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-nova-darkCardHover'
+                    }">
+                        <i data-lucide="${item.icon}" class="w-5 h-5"></i>
+                        <span>${item.label}</span>
+                    </button>
+                `).join('');
+            }
+
+            if (mobileMenu) {
+                mobileMenu.innerHTML = `
+                    <button onclick="switchTab('home')" class="flex flex-col items-center gap-1 p-1.5 rounded-xl text-[10px] font-semibold ${activeTab === 'home' ? 'text-blue-500 font-bold' : 'text-slate-400'}">
+                        <i data-lucide="home" class="w-5 h-5"></i><span>Лента</span>
+                    </button>
+                    <button onclick="switchTab('reels')" class="flex flex-col items-center gap-1 p-1.5 rounded-xl text-[10px] font-semibold ${activeTab === 'reels' ? 'text-pink-500 font-bold' : 'text-slate-400'}">
+                        <i data-lucide="clapperboard" class="w-5 h-5"></i><span>Reels</span>
+                    </button>
+                    <button onclick="openModal('quick-create-modal')" class="flex flex-col items-center justify-center p-2 rounded-2xl bg-gradient-to-tr from-blue-600 to-pink-500 text-white shadow-lg -mt-3 transform active:scale-95 transition">
+                        <i data-lucide="plus" class="w-6 h-6"></i>
+                    </button>
+                    <button onclick="switchTab('chats')" class="flex flex-col items-center gap-1 p-1.5 rounded-xl text-[10px] font-semibold relative ${activeTab === 'chats' ? 'text-blue-500 font-bold' : 'text-slate-400'}">
+                        <i data-lucide="message-circle" class="w-5 h-5"></i><span>Сообщения</span>
+                        <span class="w-2 h-2 bg-blue-500 rounded-full absolute top-1 right-3"></span>
+                    </button>
+                    <button onclick="switchTab('profile')" class="flex flex-col items-center gap-1 p-1.5 rounded-xl text-[10px] font-semibold ${activeTab === 'profile' ? 'text-blue-500 font-bold' : 'text-slate-400'}">
+                        <img src="${currUserData.avatar || 'https://placehold.co/150'}" class="w-5 h-5 rounded-full object-cover border ${activeTab === 'profile' ? 'border-blue-500 ring-2 ring-blue-500/30' : 'border-slate-400'}">
+                        <span>Профиль</span>
+                    </button>
+                `;
+            }
+
+            if (userCard) {
+                userCard.innerHTML = `
+                    <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('profile')">
+                        <div class="w-10 h-10 rounded-full nova-story-ring flex items-center justify-center">
+                            <img src="${currUserData.avatar || 'https://placehold.co/150'}" class="w-9 h-9 rounded-full object-cover">
+                        </div>
+                        <div class="truncate max-w-[110px]">
+                            <p class="font-bold text-xs truncate">@${currentUser}</p>
+                            <p class="text-[10px] text-slate-400 truncate">${currUserData.bio || 'Пользователь NovaSocial'}</p>
+                        </div>
+                    </div>
+                    <button onclick="switchTab('settings')" class="p-2 text-slate-400 hover:text-slate-200 rounded-lg hover:bg-slate-800 transition">
+                        <i data-lucide="settings" class="w-4 h-4"></i>
+                    </button>
+                `;
+            }
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function renderApp() {
+            renderNavigation();
+            renderFriendsRecommendations();
+            const container = document.getElementById('view-container');
+            if (!container) return;
+
+            switch (activeTab) {
+                case 'home': renderHomeView(container); break;
+                case 'reels': renderReelsView(container); break;
+                case 'chats': renderChatsView(container); break;
+                case 'create': renderCreatePostView(container); break;
+                case 'saved': renderSavedPostsView(container); break;
+                case 'profile': renderProfileView(container); break;
+                case 'admin': renderAdminView(container); break;
+                case 'settings': renderSettingsView(container); break;
+                default: renderHomeView(container);
+            }
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function renderStoriesBar() {
+            const DB = getDB();
+            let storiesHTML = `
+                <div class="flex items-center gap-3 overflow-x-auto pb-3 mb-3 no-scrollbar">
+                    <div onclick="openModal('create-story-modal')" class="flex flex-col items-center gap-1 cursor-pointer flex-shrink-0">
+                        <div class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-dashed border-blue-500 flex items-center justify-center bg-blue-500/10 hover:bg-blue-500/20 transition">
+                            <i data-lucide="plus" class="w-5 h-5 text-blue-500"></i>
+                            <img src="${DB.users[currentUser]?.avatar || ''}" class="absolute bottom-0 right-0 w-4 h-4 rounded-full border border-white dark:border-nova-darkCard object-cover">
+                        </div>
+                        <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-300">История</span>
+                    </div>
+            `;
+
+            (DB.stories || []).forEach(story => {
+                const author = DB.users[story.user] || {};
+                storiesHTML += `
+                    <div onclick="openStoryViewer('${story.id}')" class="flex flex-col items-center gap-1 cursor-pointer flex-shrink-0 group">
+                        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full nova-story-ring p-[2px] group-hover:scale-105 transition duration-200">
+                            <img src="${author.avatar || 'https://placehold.co/150'}" class="w-full h-full rounded-full object-cover border-2 border-white dark:border-nova-darkCard">
+                        </div>
+                        <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-300 truncate max-w-[60px]">@${story.user}</span>
+                    </div>
+                `;
+            });
+
+            storiesHTML += `</div>`;
+            return storiesHTML;
+        }
+
+        function renderHomeView(container) {
+            const DB = getDB();
+            let posts = DB.posts || [];
+            if (searchQuery) {
+                posts = posts.filter(p => p.text.toLowerCase().includes(searchQuery.toLowerCase()) || p.user.toLowerCase().includes(searchQuery.toLowerCase()));
+            }
+
+            let html = renderStoriesBar();
+
+            if (posts.length === 0) {
+                html += `
+                    <div class="text-center py-12 text-slate-400 bg-white dark:bg-nova-darkCard rounded-2xl border border-slate-200 dark:border-nova-borderDark">
+                        <i data-lucide="inbox" class="w-10 h-10 mx-auto mb-2 opacity-50"></i>
+                        <p class="font-semibold text-sm">Постов пока нет</p>
+                    </div>
+                `;
+            } else {
+                html += `<div class="space-y-4">`;
+                posts.forEach(post => {
+                    html += renderPostCard(post);
+                });
+                html += `</div>`;
+            }
+
+            container.innerHTML = html;
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function renderPostCard(post) {
+            const DB = getDB();
+            const author = DB.users[post.user] || { avatar: 'https://placehold.co/150' };
+            const isLiked = post.likedBy && post.likedBy.includes(currentUser);
+            const isSaved = post.saved && post.saved.includes(currentUser);
+            const isAdmin = DB.users[currentUser]?.role === 'admin' || currentUser === 'admin';
+            const isOwner = post.user === currentUser;
+
+            return `
+                <div class="bg-white dark:bg-nova-darkCard border border-slate-200 dark:border-nova-borderDark rounded-2xl p-3.5 sm:p-4 shadow-sm hover:border-slate-300 dark:hover:border-slate-700 transition space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2.5 cursor-pointer" onclick="showToast('Профиль: @${post.user}')">
+                            <div class="w-9 h-9 rounded-full nova-story-ring flex items-center justify-center">
+                                <img src="${author.avatar || 'https://placehold.co/150'}" class="w-8 h-8 rounded-full object-cover">
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xs sm:text-sm leading-tight flex items-center gap-1">
+                                    @${post.user}
+                                    ${post.user === 'admin' ? '<i data-lucide="badge-check" class="w-3.5 h-3.5 text-blue-500 inline"></i>' : ''}
+                                </h4>
+                                <span class="text-[10px] text-slate-400">${post.createdAt || 'Недавно'}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-1">
+                            ${(isOwner || isAdmin) ? `
+                                <button onclick="openEditPostModal('${post.id}')" class="text-blue-500 hover:bg-blue-500/10 p-1.5 rounded-lg transition" title="Редактировать">
+                                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="deletePost('${post.id}')" class="text-red-500 hover:bg-red-500/10 p-1.5 rounded-lg transition" title="Удалить">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <p class="text-xs sm:text-sm leading-relaxed">${escapeHtml(post.text)}</p>
+
+                    ${post.mediaUrl ? `
+                        <div class="rounded-xl overflow-hidden bg-black max-h-80 sm:max-h-96 flex items-center justify-center">
+                            ${post.mediaType === 'video' ? `
+                                <video src="${post.mediaUrl}" controls class="w-full max-h-80 sm:max-h-96 object-cover"></video>
+                            ` : `
+                                <img src="${post.mediaUrl}" class="w-full max-h-80 sm:max-h-96 object-cover hover:scale-[1.01] transition duration-300">
+                            `}
+                        </div>
+                    ` : ''}
+
+                    <div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-800/80 pt-2.5 text-slate-500">
+                        <div class="flex items-center gap-4">
+                            <button onclick="toggleLike('${post.id}')" class="flex items-center gap-1.5 text-xs font-semibold hover:text-red-500 transition ${isLiked ? 'text-red-500' : ''}">
+                                <i data-lucide="heart" class="w-4 h-4 ${isLiked ? 'fill-red-500' : ''}"></i>
+                                <span>${post.likes || 0}</span>
+                            </button>
+                            <button onclick="openCommentsModal('${post.id}')" class="flex items-center gap-1.5 text-xs font-semibold hover:text-blue-500 transition">
+                                <i data-lucide="message-square" class="w-4 h-4"></i>
+                                <span>${(post.comments || []).length}</span>
+                            </button>
+                            <button onclick="openShareModal('${post.id}')" class="flex items-center gap-1.5 text-xs font-semibold hover:text-pink-500 transition">
+                                <i data-lucide="send" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <button onclick="toggleSavePost('${post.id}')" class="p-1 rounded-lg hover:text-amber-500 transition ${isSaved ? 'text-amber-500' : ''}">
+                            <i data-lucide="bookmark" class="w-4 h-4 ${isSaved ? 'fill-amber-500' : ''}"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openEditPostModal(postId) {
+            const DB = getDB();
+            activeEditPostId = postId;
+            const post = DB.posts.find(p => String(p.id) === String(postId));
+            if (!post) return;
+
+            document.getElementById('edit-post-text-input').value = post.text || '';
+            openModal('edit-post-modal');
+        }
+
+        function saveEditedPost() {
+            const DB = getDB();
+            const newText = document.getElementById('edit-post-text-input')?.value.trim();
+            if (!activeEditPostId) return;
+
+            const post = DB.posts.find(p => String(p.id) === String(activeEditPostId));
+            if (post) {
+                post.text = newText || '';
+                if (window.savePostToFirestore) {
+                    window.savePostToFirestore(post);
+                }
+                closeModal('edit-post-modal');
+                showToast('Пост изменён и сохранён!', 'success');
+                renderApp();
+            }
+        }
+
+        function deletePost(postId) {
+            const DB = getDB();
+            DB.posts = DB.posts.filter(p => String(p.id) !== String(postId));
+            if (window.deletePostFromFirestore) {
+                window.deletePostFromFirestore(postId);
+            }
+            showToast('Пост успешно удалён', 'info');
+            renderApp();
+        }
+
+        function toggleLike(postId) {
+            const DB = getDB();
+            const post = DB.posts.find(p => String(p.id) === String(postId));
+            if (!post) return;
+
+            if (!post.likedBy) post.likedBy = [];
+            const idx = post.likedBy.indexOf(currentUser);
+
+            if (idx > -1) {
+                post.likedBy.splice(idx, 1);
+                post.likes = Math.max(0, (post.likes || 1) - 1);
+            } else {
+                post.likedBy.push(currentUser);
+                post.likes = (post.likes || 0) + 1;
+            }
+
+            if (window.savePostToFirestore) {
+                window.savePostToFirestore(post);
+            }
+            renderApp();
+        }
+
+        function toggleSavePost(postId) {
+            const DB = getDB();
+            const post = DB.posts.find(p => String(p.id) === String(postId));
+            if (!post) return;
+
+            if (!post.saved) post.saved = [];
+            const idx = post.saved.indexOf(currentUser);
+
+            if (idx > -1) {
+                post.saved.splice(idx, 1);
+                showToast('Удалено из сохранённых');
+            } else {
+                post.saved.push(currentUser);
+                showToast('Сохранено!', 'success');
+            }
+
+            if (window.savePostToFirestore) {
+                window.savePostToFirestore(post);
+            }
+            renderApp();
+        }
+
+        function openCommentsModal(postId) {
+            const DB = getDB();
+            activeCommentPostId = postId;
+            const post = DB.posts.find(p => String(p.id) === String(postId));
+            const listEl = document.getElementById('comments-list');
+            
+            if (listEl && post) {
+                listEl.innerHTML = (post.comments || []).map(c => `
+                    <div class="p-3 rounded-xl bg-slate-100 dark:bg-nova-darkCardHover text-xs space-y-1">
+                        <span class="font-bold text-blue-500">@${c.user}</span>
+                        <p>${escapeHtml(c.text)}</p>
+                    </div>
+                `).join('') || '<p class="text-xs text-slate-400 text-center py-4">Будьте первым, кто оставит комментарий!</p>';
+            }
+
+            openModal('comments-modal');
+        }
+
+        function sendComment() {
+            const DB = getDB();
+            const input = document.getElementById('comment-input');
+            if (!input || !input.value.trim() || !activeCommentPostId) return;
+
+            const post = DB.posts.find(p => String(p.id) === String(activeCommentPostId));
+            if (post) {
+                if (!post.comments) post.comments = [];
+                post.comments.push({
+                    user: currentUser,
+                    text: input.value.trim()
+                });
+                
+                if (window.savePostToFirestore) {
+                    window.savePostToFirestore(post);
+                }
+                
+                input.value = '';
+                openCommentsModal(activeCommentPostId);
+                renderApp();
+            }
+        }
+
+        function renderChatsView(container) {
+            const DB = getDB();
+            const allUsers = Object.keys(DB.users).filter(u => u !== currentUser);
+            if (!activeChatUser || activeChatUser === currentUser) {
+                activeChatUser = allUsers[0] || 'alex';
+            }
+
+            const chatKey = [currentUser, activeChatUser].sort().join('_');
+            const messages = DB.chats[chatKey] || [];
+            const activePartnerData = DB.users[activeChatUser] || { avatar: 'https://placehold.co/150' };
+
+            container.innerHTML = `
+                <div class="bg-white dark:bg-nova-darkCard border border-slate-200 dark:border-nova-borderDark rounded-2xl overflow-hidden flex flex-col md:flex-row h-[75vh] shadow-sm">
+                    <div class="w-full md:w-1/3 border-b md:border-b-0 md:border-r border-slate-200 dark:border-nova-borderDark flex flex-col bg-slate-50/50 dark:bg-slate-900/30 max-h-36 md:max-h-full">
+                        <div class="p-2.5 border-b border-slate-200 dark:border-nova-borderDark font-bold text-xs flex items-center justify-between">
+                            <span>Диалоги</span>
+                            <i data-lucide="message-square" class="w-4 h-4 text-blue-500"></i>
+                        </div>
+                        <div class="overflow-x-auto md:overflow-y-auto flex md:flex-col divide-x md:divide-x-0 md:divide-y divide-slate-100 dark:divide-slate-800 p-1 md:p-0">
+                            ${allUsers.map(u => {
+                                const uData = DB.users[u] || {};
+                                return `
+                                    <div onclick="selectChat('${u}')" class="p-2 md:p-3 flex items-center gap-2 md:gap-3 cursor-pointer hover:bg-slate-100 dark:hover:bg-nova-darkCardHover transition flex-shrink-0 ${activeChatUser === u ? 'bg-blue-500/10 dark:bg-blue-500/20 md:border-l-4 border-blue-500 rounded-xl md:rounded-none' : ''}">
+                                        <div class="relative">
+                                            <img src="${uData.avatar || 'https://placehold.co/150'}" class="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover">
+                                            <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-nova-darkCard absolute bottom-0 right-0"></span>
+                                        </div>
+                                        <div class="truncate max-w-[80px] md:max-w-none">
+                                            <p class="font-bold text-xs">@${u}</p>
+                                            <p class="hidden md:block text-[11px] text-slate-400 truncate">${uData.bio || 'Участник NovaSocial'}</p>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+
+                    <div class="flex-1 flex flex-col h-full bg-white dark:bg-nova-darkCard">
+                        <div class="p-2.5 border-b border-slate-200 dark:border-nova-borderDark flex items-center gap-2.5 bg-slate-50/30 dark:bg-slate-900/20">
+                            <img src="${activePartnerData.avatar || 'https://placehold.co/150'}" class="w-7 h-7 rounded-full object-cover">
+                            <div>
+                                <h4 class="font-bold text-xs">@${activeChatUser}</h4>
+                                <span class="text-[9px] text-emerald-500 font-semibold">В сети</span>
+                            </div>
+                        </div>
+
+                        <div id="chat-messages-box" class="flex-1 p-3 overflow-y-auto space-y-3">
+                            ${messages.length === 0 ? `
+                                <div class="text-center text-slate-400 py-12 text-xs">
+                                    Начни разговор с @${activeChatUser}! 👋
+                                </div>
+                            ` : messages.map(m => `
+                                <div class="flex flex-col ${m.sender === currentUser ? 'items-end' : 'items-start'}">
+                                    <div class="max-w-[80%] p-2.5 rounded-2xl text-xs ${
+                                        m.sender === currentUser 
+                                        ? 'bg-blue-600 text-white rounded-br-none' 
+                                        : 'bg-slate-100 dark:bg-nova-darkCardHover text-slate-800 dark:text-slate-100 rounded-bl-none'
+                                    }">
+                                        ${m.postRef ? `
+                                            <div class="mb-2 p-2 bg-black/20 rounded-xl text-[10px] border border-white/20">
+                                                <span class="font-bold">Пост от @${m.postRef.user}:</span>
+                                                <p class="italic truncate">${escapeHtml(m.postRef.text)}</p>
+                                            </div>
+                                        ` : ''}
+                                        <p>${escapeHtml(m.text)}</p>
+                                        <span class="text-[8px] opacity-70 block text-right mt-1">${m.time || ''}</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="p-2.5 border-t border-slate-200 dark:border-nova-borderDark flex items-center gap-2">
+                            <input type="text" id="chat-input" onkeypress="if(event.key === 'Enter') sendChatMessage()" placeholder="Написать..." class="flex-1 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-nova-borderDark rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <button onclick="sendChatMessage()" class="bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-xl transition shadow-md shadow-blue-500/20">
+                                <i data-lucide="send" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            setTimeout(() => {
+                const box = document.getElementById('chat-messages-box');
+                if (box) box.scrollTop = box.scrollHeight;
+            }, 50);
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function selectChat(user) {
+            activeChatUser = user;
+            renderChatsView(document.getElementById('view-container'));
+        }
+
+        function sendChatMessage(postRef = null) {
+            const DB = getDB();
+            const input = document.getElementById('chat-input');
+            const text = input ? input.value.trim() : '';
+
+            if (!text && !postRef) return;
+
+            const chatKey = [currentUser, activeChatUser].sort().join('_');
+            if (!DB.chats[chatKey]) DB.chats[chatKey] = [];
+
+            const now = new Date();
+            const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+            DB.chats[chatKey].push({
+                sender: currentUser,
+                text: text || 'Поделился постом',
+                postRef: postRef,
+                time: timeStr
+            });
+
+            if (input) input.value = '';
+            renderChatsView(document.getElementById('view-container'));
+        }
+
+        function renderCreatePostView(container) {
+            selectedPostMedia = { type: null, url: null };
+            container.innerHTML = `
+                <div class="bg-white dark:bg-nova-darkCard border border-slate-200 dark:border-nova-borderDark rounded-2xl p-4 sm:p-6 space-y-4 max-w-lg mx-auto shadow-sm">
+                    <h3 class="font-bold text-base sm:text-lg flex items-center gap-2">
+                        <i data-lucide="plus-square" class="w-5 h-5 text-blue-500"></i> Создать публикацию
+                    </h3>
+
+                    <textarea id="new-post-text" rows="4" placeholder="Что у вас нового?..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-nova-borderDark rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+
+                    <div>
+                        <label class="text-xs font-semibold text-slate-400 block mb-1">Медиафайл (фото или видео)</label>
+                        <div id="post-media-preview-box" class="hidden relative mb-2 rounded-xl overflow-hidden max-h-56 bg-black flex items-center justify-center">
+                            <img id="post-img-preview" class="max-h-56 w-full object-cover hidden">
+                            <video id="post-video-preview" class="max-h-56 w-full object-cover hidden" controls></video>
+                            <button onclick="clearPostMedia()" class="absolute top-2 right-2 p-1.5 bg-black/70 text-white rounded-full hover:bg-black">
+                                <i data-lucide="x" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <label class="cursor-pointer bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 w-full py-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition">
+                            <i data-lucide="image" class="w-4 h-4 text-blue-500"></i> Выбрать файл
+                            <input type="file" accept="image/*,video/*" onchange="handlePostFileSelect(event)" class="hidden">
+                        </label>
+                    </div>
+
+                    <button onclick="publishPost()" class="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-pink-500 hover:opacity-90 text-white font-bold py-2.5 rounded-xl text-sm shadow-lg shadow-blue-500/25 transition">
+                        Опубликовать
+                    </button>
+                </div>
+            `;
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function handlePostFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const isVideo = file.type.startsWith('video');
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                selectedPostMedia = { type: isVideo ? 'video' : 'image', url: e.target.result };
+                const box = document.getElementById('post-media-preview-box');
+                const img = document.getElementById('post-img-preview');
+                const video = document.getElementById('post-video-preview');
+
+                if (box) box.classList.remove('hidden');
+                if (isVideo) {
+                    if (img) img.classList.add('hidden');
+                    if (video) { video.src = e.target.result; video.classList.remove('hidden'); }
+                } else {
+                    if (video) video.classList.add('hidden');
+                    if (img) { img.src = e.target.result; img.classList.remove('hidden'); }
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearPostMedia() {
+            selectedPostMedia = { type: null, url: null };
+            const box = document.getElementById('post-media-preview-box');
+            if (box) box.classList.add('hidden');
+        }
+
+        function publishPost() {
+            const DB = getDB();
+            const text = document.getElementById('new-post-text')?.value.trim();
+
+            if (!text && !selectedPostMedia.url) {
+                showToast('Добавьте текст или медиафайл', 'error');
+                return;
+            }
+
+            const newPost = {
+                id: 'p_' + Date.now(),
+                user: currentUser,
+                text: text || '',
+                mediaType: selectedPostMedia.type || 'image',
+                mediaUrl: selectedPostMedia.url || null,
+                likes: 0,
+                likedBy: [],
+                saved: [],
+                comments: [],
+                createdAt: 'Только что',
+                timestamp: Date.now()
+            };
+
+            DB.posts.unshift(newPost);
+
+            if (window.savePostToFirestore) {
+                window.savePostToFirestore(newPost);
+            }
+
+            showToast('Пост опубликован!', 'success');
+            selectedPostMedia = { type: null, url: null };
+            switchTab('home');
+        }
+
+        function renderReelsView(container) {
+            const DB = getDB();
+            let html = `<div class="space-y-4 max-w-sm mx-auto">`;
+            (DB.reels || []).forEach(reel => {
+                html += `
+                    <div class="relative rounded-2xl overflow-hidden bg-black aspect-[9/16] shadow-2xl border border-slate-800">
+                        <video src="${reel.videoUrl}" controls class="w-full h-full object-cover"></video>
+                        <div class="absolute bottom-3 left-3 right-3 text-white z-10 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 rounded-xl pointer-events-none">
+                            <div class="flex items-center gap-2 mb-1">
+                                <img src="${DB.users[reel.user]?.avatar || 'https://placehold.co/150'}" class="w-7 h-7 rounded-full border border-white">
+                                <span class="font-bold text-xs">@${reel.user}</span>
+                            </div>
+                            <p class="text-xs font-medium">${reel.caption}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function renderSavedPostsView(container) {
+            const DB = getDB();
+            const savedPosts = (DB.posts || []).filter(p => p.saved && p.saved.includes(currentUser));
+            if (savedPosts.length === 0) {
+                container.innerHTML = `<p class="text-center text-slate-400 py-12 text-xs sm:text-sm">У вас нет сохранённых постов</p>`;
+                return;
+            }
+
+            let html = `<div class="space-y-4">`;
+            savedPosts.forEach(post => { html += renderPostCard(post); });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function renderProfileView(container) {
+            const DB = getDB();
+            const user = DB.users[currentUser] || {};
+            const myPosts = (DB.posts || []).filter(p => p.user === currentUser);
+
+            container.innerHTML = `
+                <div class="space-y-6">
+                    <div class="bg-white dark:bg-nova-darkCard border border-slate-200 dark:border-nova-borderDark rounded-2xl p-5 text-center space-y-4 shadow-sm">
+                        <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full nova-story-ring p-1 mx-auto">
+                            <img src="${user.avatar || 'https://placehold.co/150'}" class="w-full h-full rounded-full object-cover border-2 border-white dark:border-nova-darkCard">
+                        </div>
+                        <div>
+                            <h2 class="text-lg sm:text-xl font-bold flex items-center justify-center gap-1">
+                                @${currentUser}
+                                ${currentUser === 'admin' ? '<i data-lucide="badge-check" class="w-5 h-5 text-blue-500"></i>' : ''}
+                            </h2>
+                            <p class="text-xs text-slate-400 mt-1 max-w-xs mx-auto">${user.bio || 'Информация не указана'}</p>
+                            <p class="text-[11px] text-pink-500 font-semibold mt-1">${user.phone || ''}</p>
+                        </div>
+
+                        <div class="flex justify-center gap-6 border-t border-slate-100 dark:border-slate-800 pt-3 text-xs font-semibold">
+                            <div>
+                                <p class="text-base font-bold text-blue-500">${myPosts.length}</p>
+                                <p class="text-slate-400">Постов</p>
+                            </div>
+                        </div>
+
+                        <button onclick="openEditProfileModal()" class="w-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold py-2.5 rounded-xl text-xs transition">
+                            Редактировать профиль
+                        </button>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-sm sm:text-base">Мои публикации</h3>
+                        ${myPosts.map(p => renderPostCard(p)).join('') || '<p class="text-xs text-slate-400 text-center py-6">Публикаций пока нет</p>'}
+                    </div>
+                </div>
+            `;
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function openEditProfileModal() {
+            const DB = getDB();
+            const user = DB.users[currentUser] || {};
+            document.getElementById('edit-bio-input').value = user.bio || '';
+            document.getElementById('edit-phone-input').value = user.phone || '';
+            document.getElementById('edit-avatar-preview').src = user.avatar || 'https://placehold.co/150';
+            selectedAvatarBase64 = null;
+            openModal('edit-profile-modal');
+        }
+
+        function previewAvatarFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                selectedAvatarBase64 = e.target.result;
+                document.getElementById('edit-avatar-preview').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveProfileChanges() {
+            const DB = getDB();
+            const user = DB.users[currentUser];
+            if (!user) return;
+
+            if (selectedAvatarBase64) user.avatar = selectedAvatarBase64;
+            user.bio = document.getElementById('edit-bio-input').value.trim();
+            user.phone = document.getElementById('edit-phone-input').value.trim();
+
+            if (window.saveUserToFirestore) {
+                window.saveUserToFirestore(currentUser, user);
+            }
+
+            closeModal('edit-profile-modal');
+            showToast('Профиль сохранён!', 'success');
+            renderApp();
+        }
+
+        function renderAdminView(container) {
+            const DB = getDB();
+            const allUsers = Object.keys(DB.users);
+
+            container.innerHTML = `
+                <div class="space-y-4 sm:space-y-6">
+                    <div class="bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl p-5 text-white shadow-lg">
+                        <h3 class="text-lg sm:text-xl font-bold flex items-center gap-2">
+                            <i data-lucide="shield-check" class="w-6 h-6"></i> Панель Администратора
+                        </h3>
+                        <p class="text-xs text-amber-100 mt-1">Управление NovaSocial (by: Zakypov Sabit)</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                        <div class="bg-white dark:bg-nova-darkCard border border-slate-200 dark:border-nova-borderDark p-3 rounded-xl text-center">
+                            <p class="text-xl font-black text-blue-500">${allUsers.length}</p>
+                            <p class="text-[10px] text-slate-400 font-semibold">Пользователей</p>
+                        </div>
+                        <div class="bg-white dark:bg-nova-darkCard border border-slate-200 dark:border-nova-borderDark p-3 rounded-xl text-center">
+                            <p class="text-xl font-black text-pink-500">${DB.posts.length}</p>
+                            <p class="text-[10px] text-slate-400 font-semibold">Постов</p>
+                        </div>
+                        <div class="bg-white dark:bg-nova-darkCard border border-slate-200 dark:border-nova-borderDark p-3 rounded-xl text-center">
+                            <p class="text-xl font-black text-indigo-500">${DB.stories.length}</p>
+                            <p class="text-[10px] text-slate-400 font-semibold">Историй</p>
+                        </div>
+                        <div class="bg-white dark:bg-nova-darkCard border border-slate-200 dark:border-nova-borderDark p-3 rounded-xl text-center">
+                            <p class="text-xl font-black text-emerald-500">100k+</p>
+                            <p class="text-[10px] text-slate-400 font-semibold">Онлайн лимит</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-nova-darkCard border border-slate-200 dark:border-nova-borderDark rounded-2xl p-4 shadow-sm space-y-3">
+                        <h4 class="font-bold text-xs sm:text-sm">Пользователи</h4>
+                        <div class="space-y-2 max-h-80 overflow-y-auto">
+                            ${allUsers.map(u => {
+                                const uData = DB.users[u];
+                                return `
+                                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-nova-darkCardHover text-xs">
+                                        <div class="flex items-center gap-2.5">
+                                            <img src="${uData.avatar || 'https://placehold.co/150'}" class="w-7 h-7 rounded-full object-cover">
+                                            <div>
+                                                <p class="font-bold">@${u}</p>
+                                                <p class="text-[9px] text-slate-400">${uData.phone || ''}</p>
+                                            </div>
+                                        </div>
+                                        <button onclick="switchAccount('${u}')" class="px-2.5 py-1 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 font-semibold rounded-lg text-[10px]">Вход</button>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function handleStoryMediaUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const isVideo = file.type.startsWith('video');
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                selectedStoryMedia = { type: isVideo ? 'video' : 'image', url: e.target.result };
+                const box = document.getElementById('story-media-preview-box');
+                const img = document.getElementById('story-img-preview');
+                const video = document.getElementById('story-video-preview');
+
+                if (box) box.classList.remove('hidden');
+                if (isVideo) {
+                    if (img) img.classList.add('hidden');
+                    if (video) { video.src = e.target.result; video.classList.remove('hidden'); }
+                } else {
+                    if (video) video.classList.add('hidden');
+                    if (img) { img.src = e.target.result; img.classList.remove('hidden'); }
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearStoryMedia() {
+            selectedStoryMedia = { type: null, url: null };
+            const box = document.getElementById('story-media-preview-box');
+            if (box) box.classList.add('hidden');
+        }
+
+        function publishStory() {
+            const DB = getDB();
+            const text = document.getElementById('story-text-input')?.value.trim();
+
+            if (!text && !selectedStoryMedia.url) {
+                showToast('Добавьте текст или медиафайл', 'error');
+                return;
+            }
+
+            const newStory = {
+                id: 's_' + Date.now(),
+                user: currentUser,
+                mediaType: selectedStoryMedia.type || (text ? 'text' : 'image'),
+                mediaUrl: selectedStoryMedia.url || null,
+                bg: 'from-blue-600 via-indigo-600 to-pink-500',
+                text: text || '',
+                createdAt: 'Только что'
+            };
+
+            if (!DB.stories) DB.stories = [];
+            DB.stories.unshift(newStory);
+
+            if (window.saveStoryToFirestore) {
+                window.saveStoryToFirestore(newStory);
+            }
+
+            closeModal('create-story-modal');
+            clearStoryMedia();
+            showToast('История опубликована!', 'success');
+            renderApp();
+        }
+
+        function openStoryViewer(storyId) {
+            const DB = getDB();
+            const story = DB.stories.find(s => String(s.id) === String(storyId));
+            if (!story) return;
+
+            const author = DB.users[story.user] || { avatar: 'https://placehold.co/150' };
+
+            document.getElementById('story-user-avatar').src = author.avatar || 'https://placehold.co/150';
+            document.getElementById('story-user-name').innerText = `@${story.user}`;
+            document.getElementById('story-time').innerText = story.createdAt || 'Только что';
+
+            const contentBox = document.getElementById('story-body-content');
+            if (contentBox) {
+                if (story.mediaType === 'video' && story.mediaUrl) {
+                    contentBox.innerHTML = `<video src="${story.mediaUrl}" autoplay class="w-full h-full object-cover"></video>`;
+                } else if (story.mediaUrl) {
+                    contentBox.innerHTML = `
+                        <img src="${story.mediaUrl}" class="w-full h-full object-cover">
+                        ${story.text ? `<div class="absolute bottom-6 left-4 right-4 bg-black/60 backdrop-blur-md p-3 rounded-xl text-white text-xs text-center font-medium">${escapeHtml(story.text)}</div>` : ''}
+                    `;
+                } else {
+                    contentBox.innerHTML = `
+                        <div class="w-full h-full bg-gradient-to-tr ${story.bg || 'from-blue-600 to-pink-500'} flex items-center justify-center p-6 text-center text-white font-bold text-sm">
+                            ${escapeHtml(story.text)}
+                        </div>
+                    `;
+                }
+            }
+
+            openModal('story-viewer-modal');
+
+            const progressBar = document.getElementById('story-progress-bar');
+            if (progressBar) {
+                progressBar.style.width = '0%';
+                if (storyTimer) clearInterval(storyTimer);
+                let progress = 0;
+                storyTimer = setInterval(() => {
+                    progress += 2;
+                    progressBar.style.width = `${progress}%`;
+                    if (progress >= 100) {
+                        clearInterval(storyTimer);
+                        closeStoryViewer();
+                    }
+                }, 100);
+            }
+        }
+
+        function closeStoryViewer() {
+            if (storyTimer) clearInterval(storyTimer);
+            closeModal('story-viewer-modal');
+        }
+
+        function renderSettingsView(container) {
+            const DB = getDB();
+            container.innerHTML = `
+                <div class="bg-white dark:bg-nova-darkCard border border-slate-200 dark:border-nova-borderDark rounded-2xl p-5 space-y-3 max-w-md mx-auto shadow-sm">
+                    <h3 class="font-bold text-base flex items-center gap-2">
+                        <i data-lucide="settings" class="w-5 h-5 text-blue-500"></i> Настройки
+                    </h3>
+                    <div class="space-y-2">
+                        <button onclick="openLanguageModal()" class="w-full flex justify-between items-center p-3 rounded-xl bg-slate-50 dark:bg-nova-darkCardHover text-xs font-semibold">
+                            <span>Язык приложения</span>
+                            <span class="text-blue-500">${DB.users[currentUser]?.lang || 'Русский'}</span>
+                        </button>
+                        <button onclick="toggleTheme()" class="w-full flex justify-between items-center p-3 rounded-xl bg-slate-50 dark:bg-nova-darkCardHover text-xs font-semibold">
+                            <span>Тема интерфейса</span>
+                            <i data-lucide="sun" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function renderFriendsRecommendations() {
+            const container = document.getElementById('sidebar-friends-recommendations');
+            if (!container) return;
+
+            const DB = getDB();
+            const allUsers = Object.keys(DB.users);
+            container.innerHTML = allUsers.map(uName => {
+                const u = DB.users[uName];
+                return `
+                    <div class="flex items-center justify-between text-xs p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-nova-darkCardHover transition">
+                        <div class="flex items-center gap-2">
+                            <img src="${u.avatar || 'https://placehold.co/150'}" class="w-7 h-7 rounded-full object-cover">
+                            <span class="font-bold">@${uName}</span>
+                        </div>
+                        <button onclick="switchAccount('${uName}')" class="text-blue-500 font-semibold hover:underline text-[10px]">Вход</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openLanguageModal() {
+            const grid = document.getElementById('languages-grid');
+            if (grid) {
+                grid.innerHTML = LANGUAGES.map(lang => `
+                    <button onclick="selectLanguage('${lang}')" class="p-2.5 rounded-xl border border-slate-200 dark:border-nova-borderDark hover:bg-blue-600 hover:text-white text-xs font-semibold transition text-center">
+                        ${lang}
+                    </button>
+                `).join('');
+            }
+            openModal('language-modal');
+        }
+
+        function selectLanguage(lang) {
+            const DB = getDB();
+            if (DB.users[currentUser]) DB.users[currentUser].lang = lang;
+            showToast(`Язык: ${lang}`, 'success');
+            closeModal('language-modal');
+            renderApp();
+        }
+
+        function openNotificationsModal() {
+            const DB = getDB();
+            const list = document.getElementById('notifications-list');
+            if (list) {
+                list.innerHTML = (DB.notifications || []).map(n => `
+                    <div class="p-3 bg-slate-50 dark:bg-nova-darkCardHover rounded-xl text-xs space-y-1">
+                        <p class="font-semibold"><span class="text-blue-500">@${n.user}</span> ${n.text}</p>
+                        <span class="text-[9px] text-slate-400 block">${n.time}</span>
+                    </div>
+                `).join('');
+            }
+            openModal('notifications-modal');
+        }
+
+        function openShareModal(postId) {
+            const DB = getDB();
+            activeSharePostId = postId;
+            const list = document.getElementById('share-friends-list');
+            const allUsers = Object.keys(DB.users).filter(u => u !== currentUser);
+
+            if (list) {
+                list.innerHTML = allUsers.map(u => `
+                    <div onclick="sharePostToUser('${u}')" class="p-2.5 flex items-center justify-between bg-slate-50 dark:bg-nova-darkCardHover rounded-xl cursor-pointer hover:bg-blue-500/10 transition">
+                        <div class="flex items-center gap-2">
+                            <img src="${DB.users[u]?.avatar || 'https://placehold.co/150'}" class="w-7 h-7 rounded-full object-cover">
+                            <span class="font-bold text-xs">@${u}</span>
+                        </div>
+                        <span class="text-xs text-blue-500 font-semibold">Отправить</span>
+                    </div>
+                `).join('');
+            }
+
+            openModal('share-post-modal');
+        }
+
+        function sharePostToUser(targetUser) {
+            const DB = getDB();
+            const post = DB.posts.find(p => String(p.id) === String(activeSharePostId));
+            if (!post) return;
+
+            activeChatUser = targetUser;
+            sendChatMessage(post);
+            closeModal('share-post-modal');
+            showToast(`Отправлено @${targetUser}`, 'success');
+            switchTab('chats');
+        }
+
+        function escapeHtml(text) {
+            return String(text || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        window.renderApp = renderApp;
+        window.switchTab = switchTab;
+        window.switchAccount = switchAccount;
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.openMobileMoreMenu = openMobileMoreMenu;
+        window.handleSearch = handleSearch;
+        window.toggleTheme = toggleTheme;
+        window.openEditPostModal = openEditPostModal;
+        window.saveEditedPost = saveEditedPost;
+        window.deletePost = deletePost;
+        window.toggleLike = toggleLike;
+        window.toggleSavePost = toggleSavePost;
+        window.openCommentsModal = openCommentsModal;
+        window.sendComment = sendComment;
+        window.openShareModal = openShareModal;
+        window.sharePostToUser = sharePostToUser;
+        window.handlePostFileSelect = handlePostFileSelect;
+        window.clearPostMedia = clearPostMedia;
+        window.publishPost = publishPost;
+        window.openEditProfileModal = openEditProfileModal;
+        window.previewAvatarFile = previewAvatarFile;
+        window.saveProfileChanges = saveProfileChanges;
+        window.handleStoryMediaUpload = handleStoryMediaUpload;
+        window.clearStoryMedia = clearStoryMedia;
+        window.publishStory = publishStory;
+        window.openStoryViewer = openStoryViewer;
+        window.closeStoryViewer = closeStoryViewer;
+        window.openLanguageModal = openLanguageModal;
+        window.selectLanguage = selectLanguage;
+        window.openNotificationsModal = openNotificationsModal;
+
+        window.onload = function() {
+            renderApp();
+        };
+    </script>
+</body>
+</html>
